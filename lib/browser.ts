@@ -2,6 +2,14 @@ import {Zip,ZipDeflate,strToU8} from 'fflate';
 import {csvCell,dateCN} from './domain.mjs';
 declare global {interface Window {GROWTH_PORTAL?:{apiOrigin:string;authOrigin:string;redirect:string}}}
 export const sessionKey='growth-browser-session';
+export function savePendingLogin(value:{state:string;verifier:string}){
+ for(let i=localStorage.length-1;i>=0;i--){const key=localStorage.key(i);if(key?.startsWith('growth-pkce:')){try{if(JSON.parse(localStorage.getItem(key)||'{}').expiresAt<Date.now())localStorage.removeItem(key);}catch{localStorage.removeItem(key);}}}
+ localStorage.setItem('growth-pkce:'+value.state,JSON.stringify({...value,expiresAt:Date.now()+3600000}));
+}
+export function pendingLogin(state:string){
+ try{const saved=JSON.parse(localStorage.getItem('growth-pkce:'+state)||sessionStorage.getItem('growth-pkce')||'{}');return saved.state===state&&saved.verifier&&(!saved.expiresAt||saved.expiresAt>Date.now())?saved:null;}catch{return null;}
+}
+export function clearPendingLogin(state:string){localStorage.removeItem('growth-pkce:'+state);sessionStorage.removeItem('growth-pkce');}
 export function portalFetch(path:string,options:RequestInit={}){
  const config=typeof window==='undefined'?null:window.GROWTH_PORTAL;const headers=new Headers(options.headers);
  if(config){const token=sessionStorage.getItem(sessionKey);if(token)headers.set('Authorization','Bearer '+token);}

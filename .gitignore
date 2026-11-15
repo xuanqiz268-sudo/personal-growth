@@ -1,0 +1,6 @@
+node_modules/
+portable-dist/
+portable/config.js
+.dev.vars*
+.env*
+.wrangler/

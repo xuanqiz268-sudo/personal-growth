@@ -1,0 +1,10 @@
+import {build} from 'vite';
+import react from '@vitejs/plugin-react';
+import {readFileSync,writeFileSync,mkdirSync} from 'node:fs';
+import path from 'node:path';
+const root=process.cwd();const apiOrigin=process.env.PORTAL_API_ORIGIN||'https://growth-journal-xuanqiz268.pages.dev';const authOrigin=process.env.PORTAL_AUTH_ORIGIN||apiOrigin;
+const redirect=process.env.PORTAL_REDIRECT||apiOrigin+'/';
+for(const url of [apiOrigin,authOrigin,redirect])if(!url.startsWith('https://'))throw new Error('Portal URLs must use HTTPS');
+mkdirSync(path.join(root,'portable'),{recursive:true});writeFileSync(path.join(root,'portable/config.js'),'window.GROWTH_PORTAL='+JSON.stringify({apiOrigin,authOrigin,redirect})+';\n');
+await build({configFile:false,root:path.join(root,'portable'),base:'./',plugins:[react()],resolve:{alias:{'@':root}},build:{outDir:path.join(root,'portable-dist'),emptyOutDir:true,chunkSizeWarningLimit:600},css:{postcss:{plugins:[]}}});
+writeFileSync(path.join(root,'portable-dist/config.js'),readFileSync(path.join(root,'portable/config.js')));

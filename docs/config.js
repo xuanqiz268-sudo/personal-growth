@@ -1,0 +1,1 @@
+window.GROWTH_PORTAL={"apiOrigin":"https://growth-journal-xuanqiz268.pages.dev","authOrigin":"https://growth-journal-xuanqiz268.pages.dev","redirect":"https://xuanqiz268-sudo.github.io/personal-growth/"};
